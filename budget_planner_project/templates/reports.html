@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports - Budget Planner{% endblock %}
+{% block page_title %}Financial Reports{% endblock %}
+
+{% block content %}
+<!-- Year Filter -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Select Year</label>
+                <select name="year" class="form-select" onchange="this.form.submit()">
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Yearly Summary -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card bg-success bg-opacity-10 border-0 h-100">
+            <div class="card-body">
+                <h6 class="text-success mb-2">Total Income ({{ year }})</h6>
+                <h2 class="mb-0">RS{{ yearly_income|floatformat:2 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-danger bg-opacity-10 border-0 h-100">
+            <div class="card-body">
+                <h6 class="text-danger mb-2">Total Expenses ({{ year }})</h6>
+                <h2 class="mb-0">RS{{ yearly_expense|floatformat:2 }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card {% if yearly_savings >= 0 %}bg-primary{% else %}bg-warning{% endif %} bg-opacity-10 border-0 h-100">
+            <div class="card-body">
+                <h6 class="{% if yearly_savings >= 0 %}text-primary{% else %}text-warning{% endif %} mb-2">Net Savings ({{ year }})</h6>
+                <h2 class="mb-0">RS{{ yearly_savings|floatformat:2 }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4">
+                <h5 class="mb-0">Monthly Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4">
+                <h5 class="mb-0">Expense Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="expenseChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Table -->
+<div class="card">
+    <div class="card-header bg-white border-0 pt-4">
+        <h5 class="mb-0">Monthly Details</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Month</th>
+                        <th class="text-end">Income</th>
+                        <th class="text-end">Expenses</th>
+                        <th class="text-end">Savings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for month in monthly_breakdown %}
+                    <tr>
+                        <td class="fw-medium">{{ month.month }}</td>
+                        <td class="text-end text-success">RS{{ month.income|floatformat:2 }}</td>
+                        <td class="text-end text-danger">RS{{ month.expense|floatformat:2 }}</td>
+                        <td class="text-end {% if month.savings >= 0 %}text-primary{% else %}text-warning{% endif %}">
+                            RS{{ month.savings|floatformat:2 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Monthly Bar Chart
+    const monthlyData = {{ monthly_breakdown_json|safe }};
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'bar',
+        data: {
+            labels: monthlyData.map(d => d.month),
+            datasets: [
+                {
+                    label: 'Income',
+                    data: monthlyData.map(d => d.income),
+                    backgroundColor: '#198754',
+                },
+                {
+                    label: 'Expenses',
+                    data: monthlyData.map(d => d.expense),
+                    backgroundColor: '#dc3545',
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => 'RS' + value
+                    }
+                }
+            }
+        }
+    });
+
+    // Category Pie Chart
+    const categoryData = {{ category_breakdown_json|safe }};
+    const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+    const colors = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6c757d', '#6610f2', '#fd7e14'];
+    
+    new Chart(expenseCtx, {
+        type: 'pie',
+        data: {
+            labels: categoryData.map(d => d.category__name || 'Uncategorized'),
+            datasets: [{
+                data: categoryData.map(d => d.total),
+                backgroundColor: colors.slice(0, categoryData.length),
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

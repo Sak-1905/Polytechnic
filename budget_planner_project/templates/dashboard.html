@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Budget Planner{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Income</p>
+                        <h3 class="mb-0 text-success">RS{{ monthly_income|floatformat:2 }}</h3>
+                        <small class="text-muted">{{ current_month }}</small>
+                    </div>
+                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                        <i class="bi bi-arrow-down-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Total Expenses</p>
+                        <h3 class="mb-0 text-danger">RS{{ monthly_expense|floatformat:2 }}</h3>
+                        <small class="text-muted">{{ current_month }}</small>
+                    </div>
+                    <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                        <i class="bi bi-arrow-up-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Balance</p>
+                        <h3 class="mb-0 {% if balance >= 0 %}text-primary{% else %}text-danger{% endif %}">
+                            RS{{ balance|floatformat:2 }}
+                        </h3>
+                        <small class="text-muted">{{ current_month }}</small>
+                    </div>
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4">
+                <h5 class="mb-0">Income vs Expenses Trend</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4">
+                <h5 class="mb-0">Expenses by Category</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Budget Goals & Recent Transactions -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Budget Goals</h5>
+                <a href="{% url 'add_budget_goal' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i> Add Goal
+                </a>
+            </div>
+            <div class="card-body">
+                {% if budget_goals %}
+                {% for goal in budget_goals %}
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="fw-medium">{{ goal.category.name }}</span>
+                        <span class="text-muted">RS{{ goal.get_spent|floatformat:2 }} / RS{{ goal.amount|floatformat:2 }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar {% if goal.get_progress >= 90 %}bg-danger{% elif goal.get_progress >= 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                             style="width: {{ goal.get_progress }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-bullseye" style="font-size: 2rem;"></i>
+                    <p class="mt-2">No budget goals set for this month</p>
+                    <a href="{% url 'add_budget_goal' %}" class="btn btn-primary btn-sm">Set a Goal</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-white border-0 pt-4 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent Transactions</h5>
+                <a href="{% url 'add_transaction' %}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus"></i> Add
+                </a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_transactions %}
+                <div class="list-group list-group-flush">
+                    {% for transaction in recent_transactions %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-4">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle p-2 me-3 
+                                {% if transaction.type == 'income' %}bg-success{% else %}bg-danger{% endif %} bg-opacity-10">
+                                <i class="bi {% if transaction.category %}{{ transaction.category.icon }}{% else %}bi-tag{% endif %} 
+                                    {% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %}"></i>
+                            </div>
+                            <div>
+                                <div class="fw-medium">{{ transaction.description }}</div>
+                                <small class="text-muted">{{ transaction.date|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                        <span class="{% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %} fw-medium">
+                            {% if transaction.type == 'income' %}+{% else %}-{% endif %}RS{{ transaction.amount|floatformat:2 }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-receipt" style="font-size: 2rem;"></i>
+                    <p class="mt-2">No transactions yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Monthly Trend Chart
+    const monthlyData = {{ monthly_data|safe }};
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyData.map(d => d.month),
+            datasets: [
+                {
+                    label: 'Income',
+                    data: monthlyData.map(d => d.income),
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Expenses',
+                    data: monthlyData.map(d => d.expense),
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: value => 'RS' + value
+                    }
+                }
+            }
+        }
+    });
+
+    // Category Doughnut Chart
+    const categoryData = {{ expense_by_category|safe }};
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    const colors = ['#0d6efd', '#198754', '#dc3545', '#ffc107', '#0dcaf0', '#6c757d', '#6610f2', '#fd7e14'];
+    
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: categoryData.map(d => d.category__name || 'Uncategorized'),
+            datasets: [{
+                data: categoryData.map(d => d.total),
+                backgroundColor: colors.slice(0, categoryData.length),
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
