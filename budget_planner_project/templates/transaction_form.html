@@ -13,7 +13,24 @@
                     {% for field in form %}
                     <div class="mb-3">
                         <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {% if field.name == 'amount' %}
+                        <div class="amount-input-container">
+                            {{ field }}
+                            <!-- Cash Register Animation -->
+                            <div class="cash-register">
+                                <div class="register-body">
+                                    <div class="slot">
+                                        <div class="bill" id="bill-animation"></div>
+                                    </div>
+                                    <div class="counter-display">
+                                        <span class="counter-amount">Rs 0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
                         {{ field }}
+                        {% endif %}
                         {% if field.errors %}
                         <div class="text-danger small mt-1">
                             {% for error in field.errors %}{{ error }}{% endfor %}
@@ -21,7 +38,7 @@
                         {% endif %}
                     </div>
                     {% endfor %}
-                    
+
                     <div class="d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-lg"></i> Save Transaction
@@ -33,4 +50,31 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const amountInput = document.querySelector('input[name="amount"]');
+    const billAnimation = document.getElementById('bill-animation');
+    const counterAmount = document.querySelector('.counter-amount');
+
+    if (amountInput) {
+        amountInput.addEventListener('input', function() {
+            const value = parseFloat(this.value) || 0;
+
+            // Update counter display
+            counterAmount.textContent = 'Rs ' + value.toFixed(2);
+
+            // Trigger bill animation
+            if (value > 0) {
+                billAnimation.style.animation = 'none';
+                setTimeout(() => {
+                    billAnimation.style.animation = 'insertBill 0.8s ease-in-out';
+                }, 10);
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

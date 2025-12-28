@@ -9,15 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Neon color scheme */
         :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-            --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
-            --success-gradient: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
-            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-            --sidebar-bg: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --primary-gradient: linear-gradient(135deg, #00FFFF 0%, #FF1493 50%, #39FF14 100%);
+            --secondary-gradient: linear-gradient(135deg, #FF4500 0%, #00FFFF 100%);
+            --success-gradient: linear-gradient(135deg, #39FF14 0%, #00FF7F 100%);
+            --danger-gradient: linear-gradient(135deg, #FF1493 0%, #FF4500 100%);
+            --warning-gradient: linear-gradient(135deg, #FFFF00 0%, #FFA500 100%);
+            --sidebar-bg: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
+            --card-shadow: 0 4px 6px -1px rgba(0, 255, 255, 0.1), 0 2px 4px -1px rgba(0, 255, 255, 0.06);
+            --card-shadow-hover: 0 20px 25px -5px rgba(0, 255, 255, 0.1), 0 10px 10px -5px rgba(0, 255, 255, 0.04);
         }
         
         * {
@@ -570,20 +571,217 @@
             margin-bottom: 20px;
         }
         
+        /* Snowfall Effect */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            z-index: 1000;
+            color: #00FFFF;
+            font-size: 1em;
+            font-family: Arial, sans-serif;
+            pointer-events: none;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        .snowflake:nth-child(odd) {
+            animation-duration: 10s;
+            animation-delay: -5s;
+        }
+
+        .snowflake:nth-child(even) {
+            animation-duration: 15s;
+            animation-delay: -10s;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        /* Toggle Button */
+        .snow-toggle {
+            background: var(--primary-gradient);
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .snow-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .snow-toggle.active {
+            background: var(--danger-gradient);
+        }
+
+        /* Cash Register Animation */
+        .amount-input-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-radius: 16px;
+            border: 2px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .cash-register {
+            width: 200px;
+            height: 120px;
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            border-radius: 12px;
+            border: 3px solid #4a5568;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+            animation: registerGlow 2s ease-in-out infinite alternate;
+        }
+
+        .register-body {
+            padding: 12px;
+            height: 100%;
+        }
+
+        .slot {
+            width: 100%;
+            height: 45px;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #4a5568;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bill {
+            width: 120px;
+            height: 30px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 4px;
+            position: absolute;
+            top: 7px;
+            left: -120px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 0 10px rgba(16, 185, 129, 0.3);
+            border: 1px solid #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .bill::before {
+            content: '$';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .counter-display {
+            margin-top: 10px;
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #333;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .counter-amount {
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ff00;
+            animation: textGlow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes insertBill {
+            0% {
+                left: -120px;
+                transform: rotate(0deg) scale(0.9);
+                opacity: 0.8;
+            }
+            20% {
+                opacity: 1;
+                transform: rotate(2deg) scale(1);
+            }
+            50% {
+                left: 40px;
+                transform: rotate(5deg) scale(1.05);
+            }
+            80% {
+                opacity: 1;
+                transform: rotate(2deg) scale(1);
+            }
+            100% {
+                left: 200px;
+                transform: rotate(0deg) scale(0.9);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes registerGlow {
+            0% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+            }
+            100% {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 255, 255, 0.4);
+            }
+        }
+
+        @keyframes textGlow {
+            0% {
+                text-shadow: 0 0 5px #00ff00;
+            }
+            100% {
+                text-shadow: 0 0 15px #00ff00, 0 0 20px #00ff00;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
             }
-            
+
             .sidebar.show {
                 transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
                 padding: 20px;
+            }
+
+            .amount-input-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .cash-register {
+                width: 100px;
+                height: 60px;
             }
         }
     </style>
@@ -660,6 +858,10 @@
                     {% block page_title %}Dashboard{% endblock %}
                 </h1>
                 <div class="header-actions">
+                    <button id="snow-toggle" class="snow-toggle">
+                        <i class="bi bi-snow"></i>
+                        <span>Snow</span>
+                    </button>
                     <div class="date-display">
                         <i class="bi bi-calendar3"></i>
                         <span id="current-date"></span>
@@ -690,6 +892,67 @@
         // Display current date
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', options);
+
+        // Snowfall Effect
+        let snowInterval;
+        let snowflakes = [];
+        const snowToggle = document.getElementById('snow-toggle');
+        const snowIcon = snowToggle.querySelector('i');
+        const snowText = snowToggle.querySelector('span');
+
+        // Check localStorage for saved state
+        const isSnowEnabled = localStorage.getItem('snowEnabled') === 'true';
+        if (isSnowEnabled) {
+            startSnow();
+            snowToggle.classList.add('active');
+            snowText.textContent = 'Stop Snow';
+        }
+
+        snowToggle.addEventListener('click', () => {
+            if (snowToggle.classList.contains('active')) {
+                stopSnow();
+                snowToggle.classList.remove('active');
+                snowText.textContent = 'Snow';
+                localStorage.setItem('snowEnabled', 'false');
+            } else {
+                startSnow();
+                snowToggle.classList.add('active');
+                snowText.textContent = 'Stop Snow';
+                localStorage.setItem('snowEnabled', 'true');
+            }
+        });
+
+        function startSnow() {
+            snowInterval = setInterval(createSnowflake, 200);
+        }
+
+        function stopSnow() {
+            clearInterval(snowInterval);
+            // Remove all existing snowflakes
+            snowflakes.forEach(flake => flake.remove());
+            snowflakes = [];
+        }
+
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = '❄';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+
+            document.body.appendChild(snowflake);
+            snowflakes.push(snowflake);
+
+            // Remove snowflake after animation
+            setTimeout(() => {
+                if (snowflake.parentNode) {
+                    snowflake.remove();
+                    snowflakes = snowflakes.filter(f => f !== snowflake);
+                }
+            }, parseFloat(snowflake.style.animationDuration) * 1000 + 1000);
+        }
     </script>
     {% block extra_js %}{% endblock %}
 </body>
