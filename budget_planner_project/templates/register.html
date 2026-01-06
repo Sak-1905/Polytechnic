@@ -3,6 +3,251 @@
 {% block title %}Register - Budget Planner{% endblock %}
 
 {% block auth_content %}
+<div class="row justify-content-center align-items-center min-vh-100 py-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg register-card">
+            <div class="card-body p-5">
+                <!-- Added animated character -->
+                <div class="character-container">
+                    <div class="character">
+                        <div class="face" id="face">
+                            <div class="ear left"></div>
+                            <div class="ear right"></div>
+                            <div class="eyebrows" id="eyebrows">
+                                <div class="eyebrow left"></div>
+                                <div class="eyebrow right"></div>
+                            </div>
+                            <div class="eyes">
+                                <div class="eye" id="leftEye">
+                                    <div class="pupil" id="leftPupil"></div>
+                                </div>
+                                <div class="eye" id="rightEye">
+                                    <div class="pupil" id="rightPupil"></div>
+                                </div>
+                            </div>
+                            <div class="hands" id="hands">
+                                <div class="hand"></div>
+                                <div class="hand"></div>
+                            </div>
+                            <div class="blush left" id="blushLeft"></div>
+                            <div class="blush right" id="blushRight"></div>
+                            <div class="mouth" id="mouth"></div>
+                        </div>
+                        <div class="message-bubble" id="messageBubble">Hello!</div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <h2 class="mt-2 mb-1">Create Account</h2>
+                    <p class="text-muted">Start managing your budget today</p>
+                </div>
+                
+                <form method="post" id="registerForm">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if 'password' in field.name and 'password2' not in field.name %}
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in field.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn btn-register btn-lg w-100 mb-3">
+                        <i class="bi bi-rocket-takeoff me-2"></i>Create Account
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <span class="text-muted">Already have an account?</span>
+                    <a href="{% url 'login' %}" class="text-decoration-none" style="color: #C9A227;">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Added JavaScript for character animations -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const face = document.getElementById('face');
+    const leftEye = document.getElementById('leftEye');
+    const rightEye = document.getElementById('rightEye');
+    const leftPupil = document.getElementById('leftPupil');
+    const rightPupil = document.getElementById('rightPupil');
+    const eyebrows = document.getElementById('eyebrows');
+    const mouth = document.getElementById('mouth');
+    const hands = document.getElementById('hands');
+    const blushLeft = document.getElementById('blushLeft');
+    const blushRight = document.getElementById('blushRight');
+    const messageBubble = document.getElementById('messageBubble');
+    const strengthBar = document.getElementById('strengthBar');
+    
+    const inputs = document.querySelectorAll('input');
+    let currentField = null;
+    let typingTimer = null;
+    
+    const messages = {
+        'username': ['Nice name!', 'Cool!', 'I like it!', 'Great choice!'],
+        'email': ['Got it!', 'Nice email!', 'Perfect!'],
+        'password': ["I can't see!", "It's secret!", 'Shhh...', "I won't peek!"],
+        'password2': ['Matching...', 'Almost done!', 'One more!']
+    };
+    
+    function showMessage(fieldType) {
+        const msgList = messages[fieldType] || ['Looking good!'];
+        const msg = msgList[Math.floor(Math.random() * msgList.length)];
+        messageBubble.textContent = msg;
+        messageBubble.classList.add('visible');
+        
+        setTimeout(() => {
+            messageBubble.classList.remove('visible');
+        }, 2000);
+    }
+    
+    function resetFace() {
+        leftEye.classList.remove('closed');
+        rightEye.classList.remove('closed');
+        hands.classList.remove('covering');
+        eyebrows.classList.remove('raised');
+        mouth.classList.remove('smile', 'thinking');
+        blushLeft.classList.remove('visible');
+        blushRight.classList.remove('visible');
+        face.classList.remove('happy');
+    }
+    
+    function lookAtInput(input) {
+        const inputRect = input.getBoundingClientRect();
+        const faceRect = face.getBoundingClientRect();
+        
+        const inputCenterX = inputRect.left + inputRect.width / 2;
+        const inputCenterY = inputRect.top + inputRect.height / 2;
+        const faceCenterX = faceRect.left + faceRect.width / 2;
+        const faceCenterY = faceRect.top + faceRect.height / 2;
+        
+        const maxMove = 5;
+        const deltaX = Math.max(-maxMove, Math.min(maxMove, (inputCenterX - faceCenterX) / 30));
+        const deltaY = Math.max(-maxMove, Math.min(maxMove, (inputCenterY - faceCenterY) / 30));
+        
+        leftPupil.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+        rightPupil.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+    }
+    
+    function handlePasswordField(isPassword, input) {
+        if (isPassword) {
+            leftEye.classList.add('closed');
+            rightEye.classList.add('closed');
+            hands.classList.add('covering');
+            mouth.classList.add('thinking');
+            
+            // Password strength indicator
+            if (strengthBar && input.value) {
+                const length = input.value.length;
+                strengthBar.className = 'password-strength-bar';
+                if (length < 6) {
+                    strengthBar.classList.add('strength-weak');
+                } else if (length < 10) {
+                    strengthBar.classList.add('strength-medium');
+                } else {
+                    strengthBar.classList.add('strength-strong');
+                }
+            }
+        } else {
+            resetFace();
+            lookAtInput(input);
+        }
+    }
+    
+    function createParticles() {
+        const container = document.querySelector('.character-container');
+        const colors = ['#FFD93D', '#F6C90E', '#FF6B8A', '#00C851', '#33b5e5'];
+        
+        for (let i = 0; i < 5; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.left = (Math.random() * 100) + 'px';
+            particle.style.top = (Math.random() * 50 + 50) + 'px';
+            container.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 1000);
+        }
+    }
+    
+    inputs.forEach(input => {
+        const fieldName = input.name.toLowerCase();
+        const isPassword = fieldName.includes('password');
+        
+        input.addEventListener('focus', function() {
+            currentField = fieldName;
+            handlePasswordField(isPassword, input);
+            eyebrows.classList.add('raised');
+            
+            if (!isPassword) {
+                showMessage(fieldName.includes('email') ? 'email' : 
+                           fieldName.includes('username') ? 'username' : 'default');
+            } else {
+                showMessage(fieldName === 'password2' ? 'password2' : 'password');
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            resetFace();
+            
+            if (input.value.length > 0) {
+                mouth.classList.add('smile');
+                blushLeft.classList.add('visible');
+                blushRight.classList.add('visible');
+                face.classList.add('happy');
+                createParticles();
+            }
+        });
+        
+        input.addEventListener('input', function() {
+            handlePasswordField(isPassword, input);
+            
+            if (!isPassword) {
+                // Typing animation - mouth moves
+                clearTimeout(typingTimer);
+                mouth.classList.add('thinking');
+                
+                typingTimer = setTimeout(() => {
+                    mouth.classList.remove('thinking');
+                }, 200);
+                
+                // Track cursor position in input
+                const inputRect = input.getBoundingClientRect();
+                const textWidth = input.value.length * 8; // Approximate character width
+                const cursorX = Math.min(textWidth, inputRect.width - 20);
+                
+                const maxMove = 6;
+                const moveX = (cursorX / inputRect.width) * maxMove * 2 - maxMove;
+                
+                leftPupil.style.transform = `translate(calc(-50% + ${moveX}px), 3px)`;
+                rightPupil.style.transform = `translate(calc(-50% + ${moveX}px), 3px)`;
+            }
+        });
+    });
+    
+    // Initial animation
+    setTimeout(() => {
+        showMessage('username');
+        face.classList.add('happy');
+        setTimeout(() => face.classList.remove('happy'), 500);
+    }, 500);
+});
+</script>
 <style>
     /* Added custom animations and character styles */
     .character-container {
@@ -352,250 +597,4 @@
     .strength-medium { background: #ffbb33; width: 66%; }
     .strength-strong { background: #00C851; width: 100%; }
 </style>
-
-<div class="row justify-content-center align-items-center min-vh-100 py-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg register-card">
-            <div class="card-body p-5">
-                <!-- Added animated character -->
-                <div class="character-container">
-                    <div class="character">
-                        <div class="face" id="face">
-                            <div class="ear left"></div>
-                            <div class="ear right"></div>
-                            <div class="eyebrows" id="eyebrows">
-                                <div class="eyebrow left"></div>
-                                <div class="eyebrow right"></div>
-                            </div>
-                            <div class="eyes">
-                                <div class="eye" id="leftEye">
-                                    <div class="pupil" id="leftPupil"></div>
-                                </div>
-                                <div class="eye" id="rightEye">
-                                    <div class="pupil" id="rightPupil"></div>
-                                </div>
-                            </div>
-                            <div class="hands" id="hands">
-                                <div class="hand"></div>
-                                <div class="hand"></div>
-                            </div>
-                            <div class="blush left" id="blushLeft"></div>
-                            <div class="blush right" id="blushRight"></div>
-                            <div class="mouth" id="mouth"></div>
-                        </div>
-                        <div class="message-bubble" id="messageBubble">Hello!</div>
-                    </div>
-                </div>
-                
-                <div class="text-center mb-4">
-                    <h2 class="mt-2 mb-1">Create Account</h2>
-                    <p class="text-muted">Start managing your budget today</p>
-                </div>
-                
-                <form method="post" id="registerForm">
-                    {% csrf_token %}
-                    {% for field in form %}
-                    <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                        {{ field }}
-                        {% if 'password' in field.name and 'password2' not in field.name %}
-                        <div class="password-strength">
-                            <div class="password-strength-bar" id="strengthBar"></div>
-                        </div>
-                        {% endif %}
-                        {% if field.errors %}
-                        <div class="text-danger small mt-1">
-                            {% for error in field.errors %}{{ error }}{% endfor %}
-                        </div>
-                        {% endif %}
-                        {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text|safe }}</div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                    
-                    <button type="submit" class="btn btn-register btn-lg w-100 mb-3">
-                        <i class="bi bi-rocket-takeoff me-2"></i>Create Account
-                    </button>
-                </form>
-                
-                <div class="text-center">
-                    <span class="text-muted">Already have an account?</span>
-                    <a href="{% url 'login' %}" class="text-decoration-none" style="color: #C9A227;">Sign In</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Added JavaScript for character animations -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const face = document.getElementById('face');
-    const leftEye = document.getElementById('leftEye');
-    const rightEye = document.getElementById('rightEye');
-    const leftPupil = document.getElementById('leftPupil');
-    const rightPupil = document.getElementById('rightPupil');
-    const eyebrows = document.getElementById('eyebrows');
-    const mouth = document.getElementById('mouth');
-    const hands = document.getElementById('hands');
-    const blushLeft = document.getElementById('blushLeft');
-    const blushRight = document.getElementById('blushRight');
-    const messageBubble = document.getElementById('messageBubble');
-    const strengthBar = document.getElementById('strengthBar');
-    
-    const inputs = document.querySelectorAll('input');
-    let currentField = null;
-    let typingTimer = null;
-    
-    const messages = {
-        'username': ['Nice name!', 'Cool!', 'I like it!', 'Great choice!'],
-        'email': ['Got it!', 'Nice email!', 'Perfect!'],
-        'password': ["I can't see!", "It's secret!", 'Shhh...', "I won't peek!"],
-        'password2': ['Matching...', 'Almost done!', 'One more!']
-    };
-    
-    function showMessage(fieldType) {
-        const msgList = messages[fieldType] || ['Looking good!'];
-        const msg = msgList[Math.floor(Math.random() * msgList.length)];
-        messageBubble.textContent = msg;
-        messageBubble.classList.add('visible');
-        
-        setTimeout(() => {
-            messageBubble.classList.remove('visible');
-        }, 2000);
-    }
-    
-    function resetFace() {
-        leftEye.classList.remove('closed');
-        rightEye.classList.remove('closed');
-        hands.classList.remove('covering');
-        eyebrows.classList.remove('raised');
-        mouth.classList.remove('smile', 'thinking');
-        blushLeft.classList.remove('visible');
-        blushRight.classList.remove('visible');
-        face.classList.remove('happy');
-    }
-    
-    function lookAtInput(input) {
-        const inputRect = input.getBoundingClientRect();
-        const faceRect = face.getBoundingClientRect();
-        
-        const inputCenterX = inputRect.left + inputRect.width / 2;
-        const inputCenterY = inputRect.top + inputRect.height / 2;
-        const faceCenterX = faceRect.left + faceRect.width / 2;
-        const faceCenterY = faceRect.top + faceRect.height / 2;
-        
-        const maxMove = 5;
-        const deltaX = Math.max(-maxMove, Math.min(maxMove, (inputCenterX - faceCenterX) / 30));
-        const deltaY = Math.max(-maxMove, Math.min(maxMove, (inputCenterY - faceCenterY) / 30));
-        
-        leftPupil.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
-        rightPupil.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
-    }
-    
-    function handlePasswordField(isPassword, input) {
-        if (isPassword) {
-            leftEye.classList.add('closed');
-            rightEye.classList.add('closed');
-            hands.classList.add('covering');
-            mouth.classList.add('thinking');
-            
-            // Password strength indicator
-            if (strengthBar && input.value) {
-                const length = input.value.length;
-                strengthBar.className = 'password-strength-bar';
-                if (length < 6) {
-                    strengthBar.classList.add('strength-weak');
-                } else if (length < 10) {
-                    strengthBar.classList.add('strength-medium');
-                } else {
-                    strengthBar.classList.add('strength-strong');
-                }
-            }
-        } else {
-            resetFace();
-            lookAtInput(input);
-        }
-    }
-    
-    function createParticles() {
-        const container = document.querySelector('.character-container');
-        const colors = ['#FFD93D', '#F6C90E', '#FF6B8A', '#00C851', '#33b5e5'];
-        
-        for (let i = 0; i < 5; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-            particle.style.left = (Math.random() * 100) + 'px';
-            particle.style.top = (Math.random() * 50 + 50) + 'px';
-            container.appendChild(particle);
-            
-            setTimeout(() => particle.remove(), 1000);
-        }
-    }
-    
-    inputs.forEach(input => {
-        const fieldName = input.name.toLowerCase();
-        const isPassword = fieldName.includes('password');
-        
-        input.addEventListener('focus', function() {
-            currentField = fieldName;
-            handlePasswordField(isPassword, input);
-            eyebrows.classList.add('raised');
-            
-            if (!isPassword) {
-                showMessage(fieldName.includes('email') ? 'email' : 
-                           fieldName.includes('username') ? 'username' : 'default');
-            } else {
-                showMessage(fieldName === 'password2' ? 'password2' : 'password');
-            }
-        });
-        
-        input.addEventListener('blur', function() {
-            resetFace();
-            
-            if (input.value.length > 0) {
-                mouth.classList.add('smile');
-                blushLeft.classList.add('visible');
-                blushRight.classList.add('visible');
-                face.classList.add('happy');
-                createParticles();
-            }
-        });
-        
-        input.addEventListener('input', function() {
-            handlePasswordField(isPassword, input);
-            
-            if (!isPassword) {
-                // Typing animation - mouth moves
-                clearTimeout(typingTimer);
-                mouth.classList.add('thinking');
-                
-                typingTimer = setTimeout(() => {
-                    mouth.classList.remove('thinking');
-                }, 200);
-                
-                // Track cursor position in input
-                const inputRect = input.getBoundingClientRect();
-                const textWidth = input.value.length * 8; // Approximate character width
-                const cursorX = Math.min(textWidth, inputRect.width - 20);
-                
-                const maxMove = 6;
-                const moveX = (cursorX / inputRect.width) * maxMove * 2 - maxMove;
-                
-                leftPupil.style.transform = `translate(calc(-50% + ${moveX}px), 3px)`;
-                rightPupil.style.transform = `translate(calc(-50% + ${moveX}px), 3px)`;
-            }
-        });
-    });
-    
-    // Initial animation
-    setTimeout(() => {
-        showMessage('username');
-        face.classList.add('happy');
-        setTimeout(() => face.classList.remove('happy'), 500);
-    }, 500);
-});
-</script>
 {% endblock %}

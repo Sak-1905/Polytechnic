@@ -3,6 +3,217 @@
 {% block title %}Login - Budget Planner{% endblock %}
 
 {% block auth_content %}
+<div class="login-container">
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+    </div>
+    
+    <div class="login-card">
+        <div class="owl-container">
+            <div class="owl" id="owl">
+                <div class="owl-ears">
+                    <div class="owl-ear left"></div>
+                    <div class="owl-ear right"></div>
+                    <div class="owl-ear-inner left"></div>
+                    <div class="owl-ear-inner right"></div>
+                </div>
+                
+                <div class="owl-face">
+                    <div class="owl-eyes">
+                        <div class="owl-eye-bg">
+                            <div class="owl-eyelid" id="eyelid-left"></div>
+                            <div class="owl-eye" id="eye-left"></div>
+                        </div>
+                        <div class="owl-eye-bg">
+                            <div class="owl-eyelid" id="eyelid-right"></div>
+                            <div class="owl-eye" id="eye-right"></div>
+                        </div>
+                    </div>
+                    <div class="owl-beak"></div>
+                    <div class="owl-blush left"></div>
+                    <div class="owl-blush right"></div>
+                </div>
+                
+                <div class="owl-body">
+                    <div class="owl-belly"></div>
+                </div>
+                
+                <div class="owl-wings">
+                    <div class="owl-wing left" id="wing-left"></div>
+                    <div class="owl-wing right" id="wing-right"></div>
+                </div>
+                
+                <div class="owl-feet">
+                    <div class="owl-foot">
+                        <div class="owl-toe"></div>
+                        <div class="owl-toe"></div>
+                        <div class="owl-toe"></div>
+                    </div>
+                    <div class="owl-foot">
+                        <div class="owl-toe"></div>
+                        <div class="owl-toe"></div>
+                        <div class="owl-toe"></div>
+                    </div>
+                </div>
+                
+                <div class="speech-bubble" id="speech-bubble">Hoo hoo!</div>
+            </div>
+        </div>
+        
+        <h1 class="login-title">Welcome Back!</h1>
+        <p class="login-subtitle">Sign in to continue your journey</p>
+        
+        <form method="post" id="login-form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-circle me-2"></i>
+                Invalid username or password.
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label class="form-label" for="username">
+                    <i class="bi bi-person-fill me-2"></i>Username
+                </label>
+                <input type="text" name="username" class="form-control" id="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="password">
+                    <i class="bi bi-lock-fill me-2"></i>Password
+                </label>
+                <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit" class="btn-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+        </form>
+        
+        <p class="register-link">
+            Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    const owl = document.getElementById('owl');
+    const eyeLeft = document.getElementById('eye-left');
+    const eyeRight = document.getElementById('eye-right');
+    const eyelidLeft = document.getElementById('eyelid-left');
+    const eyelidRight = document.getElementById('eyelid-right');
+    const wingLeft = document.getElementById('wing-left');
+    const wingRight = document.getElementById('wing-right');
+    const speechBubble = document.getElementById('speech-bubble');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    const messages = ['Hoo hoo!', 'Hello!', 'Nice!', 'Great!', 'Welcome!', 'Yay!'];
+    
+    // Eye following for username
+    usernameInput.addEventListener('input', function() {
+        const length = this.value.length;
+        const maxMove = 8;
+        const move = Math.min(length * 0.8, maxMove);
+        
+        eyeLeft.style.transform = `translateX(${move}px)`;
+        eyeRight.style.transform = `translateX(${move}px)`;
+        
+        this.classList.add('input-active');
+    });
+    
+    usernameInput.addEventListener('focus', function() {
+        openEyes();
+        showRandomMessage();
+    });
+    
+    usernameInput.addEventListener('blur', function() {
+        if (!this.value) {
+            this.classList.remove('input-active');
+        }
+        resetEyes();
+    });
+    
+    // Password - cover eyes with wings
+    passwordInput.addEventListener('focus', function() {
+        coverEyes();
+    });
+    
+    passwordInput.addEventListener('blur', function() {
+        uncoverEyes();
+        if (this.value) {
+            owl.classList.add('happy');
+            setTimeout(() => owl.classList.remove('happy'), 500);
+        }
+    });
+    
+    passwordInput.addEventListener('input', function() {
+        this.classList.add('input-active');
+        // Add slight wing movement on typing
+        wingLeft.style.transform = 'rotate(35deg) translateX(35px) translateY(-60px)';
+        wingRight.style.transform = 'rotate(-35deg) translateX(-35px) translateY(-60px)';
+        setTimeout(() => {
+            wingLeft.style.transform = 'rotate(30deg) translateX(35px) translateY(-60px)';
+            wingRight.style.transform = 'rotate(-30deg) translateX(-35px) translateY(-60px)';
+        }, 100);
+    });
+    
+    function coverEyes() {
+        eyelidLeft.classList.add('closed');
+        eyelidRight.classList.add('closed');
+        wingLeft.classList.add('covering');
+        wingRight.classList.add('covering');
+    }
+    
+    function uncoverEyes() {
+        eyelidLeft.classList.remove('closed');
+        eyelidRight.classList.remove('closed');
+        wingLeft.classList.remove('covering');
+        wingRight.classList.remove('covering');
+    }
+    
+    function openEyes() {
+        eyelidLeft.classList.remove('closed');
+        eyelidRight.classList.remove('closed');
+    }
+    
+    function resetEyes() {
+        eyeLeft.style.transform = 'translateX(0)';
+        eyeRight.style.transform = 'translateX(0)';
+    }
+    
+    function showRandomMessage() {
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+        speechBubble.textContent = msg;
+        speechBubble.classList.add('show');
+        setTimeout(() => speechBubble.classList.remove('show'), 2000);
+    }
+    
+    // Form submit celebration
+    document.getElementById('login-form').addEventListener('submit', function() {
+        owl.classList.add('happy');
+        createSparkles();
+    });
+    
+    function createSparkles() {
+        for (let i = 0; i < 8; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = (Math.random() * 150) + 'px';
+            sparkle.style.top = (Math.random() * 100) + 'px';
+            sparkle.style.animationDelay = (Math.random() * 0.5) + 's';
+            owl.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1000);
+        }
+    }
+</script>
 <style>
     .login-container {
         min-height: 100vh;
@@ -472,216 +683,4 @@
         50% { transform: scale(1) rotate(180deg); opacity: 1; }
     }
 </style>
-
-<div class="login-container">
-    <div class="floating-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-        <div class="shape shape-4"></div>
-        <div class="shape shape-5"></div>
-        <div class="shape shape-6"></div>
-    </div>
-    
-    <div class="login-card">
-        <div class="owl-container">
-            <div class="owl" id="owl">
-                <div class="owl-ears">
-                    <div class="owl-ear left"></div>
-                    <div class="owl-ear right"></div>
-                    <div class="owl-ear-inner left"></div>
-                    <div class="owl-ear-inner right"></div>
-                </div>
-                
-                <div class="owl-face">
-                    <div class="owl-eyes">
-                        <div class="owl-eye-bg">
-                            <div class="owl-eyelid" id="eyelid-left"></div>
-                            <div class="owl-eye" id="eye-left"></div>
-                        </div>
-                        <div class="owl-eye-bg">
-                            <div class="owl-eyelid" id="eyelid-right"></div>
-                            <div class="owl-eye" id="eye-right"></div>
-                        </div>
-                    </div>
-                    <div class="owl-beak"></div>
-                    <div class="owl-blush left"></div>
-                    <div class="owl-blush right"></div>
-                </div>
-                
-                <div class="owl-body">
-                    <div class="owl-belly"></div>
-                </div>
-                
-                <div class="owl-wings">
-                    <div class="owl-wing left" id="wing-left"></div>
-                    <div class="owl-wing right" id="wing-right"></div>
-                </div>
-                
-                <div class="owl-feet">
-                    <div class="owl-foot">
-                        <div class="owl-toe"></div>
-                        <div class="owl-toe"></div>
-                        <div class="owl-toe"></div>
-                    </div>
-                    <div class="owl-foot">
-                        <div class="owl-toe"></div>
-                        <div class="owl-toe"></div>
-                        <div class="owl-toe"></div>
-                    </div>
-                </div>
-                
-                <div class="speech-bubble" id="speech-bubble">Hoo hoo!</div>
-            </div>
-        </div>
-        
-        <h1 class="login-title">Welcome Back!</h1>
-        <p class="login-subtitle">Sign in to continue your journey</p>
-        
-        <form method="post" id="login-form">
-            {% csrf_token %}
-            
-            {% if form.errors %}
-            <div class="alert alert-danger">
-                <i class="bi bi-exclamation-circle me-2"></i>
-                Invalid username or password.
-            </div>
-            {% endif %}
-            
-            <div class="form-group">
-                <label class="form-label" for="username">
-                    <i class="bi bi-person-fill me-2"></i>Username
-                </label>
-                <input type="text" name="username" class="form-control" id="username" placeholder="Enter your username" required>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="password">
-                    <i class="bi bi-lock-fill me-2"></i>Password
-                </label>
-                <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
-            </div>
-            
-            <button type="submit" class="btn-login">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
-            </button>
-        </form>
-        
-        <p class="register-link">
-            Don't have an account? <a href="{% url 'register' %}">Sign Up</a>
-        </p>
-    </div>
-</div>
-
-<script>
-    const owl = document.getElementById('owl');
-    const eyeLeft = document.getElementById('eye-left');
-    const eyeRight = document.getElementById('eye-right');
-    const eyelidLeft = document.getElementById('eyelid-left');
-    const eyelidRight = document.getElementById('eyelid-right');
-    const wingLeft = document.getElementById('wing-left');
-    const wingRight = document.getElementById('wing-right');
-    const speechBubble = document.getElementById('speech-bubble');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    
-    const messages = ['Hoo hoo!', 'Hello!', 'Nice!', 'Great!', 'Welcome!', 'Yay!'];
-    
-    // Eye following for username
-    usernameInput.addEventListener('input', function() {
-        const length = this.value.length;
-        const maxMove = 8;
-        const move = Math.min(length * 0.8, maxMove);
-        
-        eyeLeft.style.transform = `translateX(${move}px)`;
-        eyeRight.style.transform = `translateX(${move}px)`;
-        
-        this.classList.add('input-active');
-    });
-    
-    usernameInput.addEventListener('focus', function() {
-        openEyes();
-        showRandomMessage();
-    });
-    
-    usernameInput.addEventListener('blur', function() {
-        if (!this.value) {
-            this.classList.remove('input-active');
-        }
-        resetEyes();
-    });
-    
-    // Password - cover eyes with wings
-    passwordInput.addEventListener('focus', function() {
-        coverEyes();
-    });
-    
-    passwordInput.addEventListener('blur', function() {
-        uncoverEyes();
-        if (this.value) {
-            owl.classList.add('happy');
-            setTimeout(() => owl.classList.remove('happy'), 500);
-        }
-    });
-    
-    passwordInput.addEventListener('input', function() {
-        this.classList.add('input-active');
-        // Add slight wing movement on typing
-        wingLeft.style.transform = 'rotate(35deg) translateX(35px) translateY(-60px)';
-        wingRight.style.transform = 'rotate(-35deg) translateX(-35px) translateY(-60px)';
-        setTimeout(() => {
-            wingLeft.style.transform = 'rotate(30deg) translateX(35px) translateY(-60px)';
-            wingRight.style.transform = 'rotate(-30deg) translateX(-35px) translateY(-60px)';
-        }, 100);
-    });
-    
-    function coverEyes() {
-        eyelidLeft.classList.add('closed');
-        eyelidRight.classList.add('closed');
-        wingLeft.classList.add('covering');
-        wingRight.classList.add('covering');
-    }
-    
-    function uncoverEyes() {
-        eyelidLeft.classList.remove('closed');
-        eyelidRight.classList.remove('closed');
-        wingLeft.classList.remove('covering');
-        wingRight.classList.remove('covering');
-    }
-    
-    function openEyes() {
-        eyelidLeft.classList.remove('closed');
-        eyelidRight.classList.remove('closed');
-    }
-    
-    function resetEyes() {
-        eyeLeft.style.transform = 'translateX(0)';
-        eyeRight.style.transform = 'translateX(0)';
-    }
-    
-    function showRandomMessage() {
-        const msg = messages[Math.floor(Math.random() * messages.length)];
-        speechBubble.textContent = msg;
-        speechBubble.classList.add('show');
-        setTimeout(() => speechBubble.classList.remove('show'), 2000);
-    }
-    
-    // Form submit celebration
-    document.getElementById('login-form').addEventListener('submit', function() {
-        owl.classList.add('happy');
-        createSparkles();
-    });
-    
-    function createSparkles() {
-        for (let i = 0; i < 8; i++) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.style.left = (Math.random() * 150) + 'px';
-            sparkle.style.top = (Math.random() * 100) + 'px';
-            sparkle.style.animationDelay = (Math.random() * 0.5) + 's';
-            owl.appendChild(sparkle);
-            setTimeout(() => sparkle.remove(), 1000);
-        }
-    }
-</script>
 {% endblock %}
