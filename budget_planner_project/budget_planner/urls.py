@@ -29,4 +29,7 @@ urlpatterns = [
     
     # Reports
     path('reports/', views.reports, name='reports'),
+    
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
 ]

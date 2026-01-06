@@ -8,6 +8,8 @@ from datetime import datetime
 from .models import Category, Transaction, BudgetGoal
 from .forms import RegisterForm, CategoryForm, TransactionForm, BudgetGoalForm
 import json
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 def register(request):
@@ -343,3 +345,51 @@ def reports(request):
         'category_breakdown_json': json.dumps(category_breakdown_list),
     }
     return render(request, 'reports.html', context)
+
+
+def about(request):
+    """Display the About page"""
+    return render(request, 'about.html')
+
+
+def contact(request):
+    """Display contact form and handle email submission"""
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
+        
+        # Validate form data
+        if not all([name, email, subject, message]):
+            messages.error(request, 'Please fill in all fields.')
+            return render(request, 'contact.html')
+        
+        # Compose email
+        full_message = f"""
+        New Contact Form Submission
+        
+        From: {name}
+        Email: {email}
+        Subject: {subject}
+        
+        Message:
+        {message}
+        """
+        
+        try:
+            # Send email
+            send_mail(
+                subject=f'Contact Form: {subject}',
+                message=full_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['Sguheea@gmail.com'],
+                fail_silently=False,
+            )
+            messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
+            return redirect('contact')
+        except Exception as e:
+            messages.error(request, 'Sorry, there was an error sending your message. Please try again later.')
+            return render(request, 'contact.html')
+    
+    return render(request, 'contact.html')

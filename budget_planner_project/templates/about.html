@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - BudgetPro{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .page-header {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .hero-section {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .animated-icon {
+        animation: float 3s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }
+
+    .animated-icon:hover {
+        animation: pulse 0.6s ease-in-out infinite;
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .feature-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .feature-card:hover::before {
+        left: 100%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+    }
+
+    .feature-card:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.4s both; }
+    .feature-card:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.5s both; }
+    .feature-card:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.6s both; }
+    .feature-card:nth-child(4) { animation: fadeInUp 0.8s ease-out 0.7s both; }
+
+    .feature-icon {
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(360deg) scale(1.2);
+    }
+
+    .mission-section {
+        animation: fadeInUp 1s ease-out 0.8s both;
+    }
+
+    .cta-section {
+        animation: fadeInUp 1s ease-out 1s both;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    .cta-button {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .cta-button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .stat-number {
+        font-size: 48px;
+        font-weight: 800;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .left-content {
+        animation: slideInLeft 0.8s ease-out 0.3s both;
+    }
+
+    .right-content {
+        animation: slideInRight 0.8s ease-out 0.3s both;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% auto;
+        animation: shimmer 3s linear infinite;
+    }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">
+        <span class="page-title-icon">
+            <i class="bi bi-info-circle-fill"></i>
+        </span>
+        About BudgetPro
+    </h1>
+</div>
+
+<div class="row hero-section">
+    <div class="col-lg-12">
+        <div class="card" style="border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border-radius: 24px;">
+            <div class="card-body" style="padding: 60px 40px;">
+                <div class="row align-items-center mb-5">
+                    <div class="col-md-6 left-content">
+                        <h2 style="font-weight: 800; font-size: 42px; color: #1e293b; margin-bottom: 20px; line-height: 1.2;">
+                            Your Personal <span class="gradient-text">Finance Companion</span>
+                        </h2>
+                        <p style="font-size: 20px; color: #64748b; line-height: 1.8; margin-bottom: 30px;">
+                            BudgetPro is a comprehensive budget planning application designed to help you take control 
+                            of your finances with powerful insights and intuitive tools.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="stat-number">10K+</div>
+                                <div style="color: #64748b; font-weight: 600;">Active Users</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-number">$2M+</div>
+                                <div style="color: #64748b; font-weight: 600;">Money Saved</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-center right-content">
+                        <div class="animated-icon" style="width: 280px; height: 280px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); 
+                                    border-radius: 40px; display: flex; align-items: center; 
+                                    justify-content: center; margin: 0 auto; box-shadow: 0 30px 60px rgba(99, 102, 241, 0.4);">
+                            <i class="bi bi-wallet2" style="font-size: 120px; color: white;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="margin: 60px 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);">
+
+                <h3 style="font-weight: 800; font-size: 36px; color: #1e293b; margin-bottom: 40px; text-align: center;">
+                    <i class="bi bi-star-fill" style="color: #f59e0b; margin-right: 10px;"></i>
+                    Powerful Features
+                </h3>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-6">
+                        <div class="feature-card" style="padding: 35px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%); 
+                                    border-radius: 20px; height: 100%; border: 2px solid rgba(99, 102, 241, 0.1);">
+                            <div class="feature-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);">
+                                <i class="bi bi-arrow-left-right" style="font-size: 28px; color: white;"></i>
+                            </div>
+                            <h5 style="font-weight: 700; font-size: 22px; color: #1e293b; margin-bottom: 12px;">Transaction Tracking</h5>
+                            <p style="color: #64748b; margin: 0; font-size: 16px; line-height: 1.7;">
+                                Easily record and categorize your income and expenses with our lightning-fast, intuitive interface that makes tracking effortless.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card" style="padding: 35px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(52, 211, 153, 0.08) 100%); 
+                                    border-radius: 20px; height: 100%; border: 2px solid rgba(16, 185, 129, 0.1);">
+                            <div class="feature-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #34d399 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);">
+                                <i class="bi bi-bullseye" style="font-size: 28px; color: white;"></i>
+                            </div>
+                            <h5 style="font-weight: 700; font-size: 22px; color: #1e293b; margin-bottom: 12px;">Smart Budget Goals</h5>
+                            <p style="color: #64748b; margin: 0; font-size: 16px; line-height: 1.7;">
+                                Set intelligent monthly budget goals for different categories and track your progress with real-time visual analytics.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card" style="padding: 35px; background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(248, 113, 113, 0.08) 100%); 
+                                    border-radius: 20px; height: 100%; border: 2px solid rgba(239, 68, 68, 0.1);">
+                            <div class="feature-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);">
+                                <i class="bi bi-bar-chart-fill" style="font-size: 28px; color: white;"></i>
+                            </div>
+                            <h5 style="font-weight: 700; font-size: 22px; color: #1e293b; margin-bottom: 12px;">Detailed Analytics</h5>
+                            <p style="color: #64748b; margin: 0; font-size: 16px; line-height: 1.7;">
+                                Visualize your financial data with stunning, interactive charts and comprehensive reports that reveal spending patterns.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="feature-card" style="padding: 35px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(251, 191, 36, 0.08) 100%); 
+                                    border-radius: 20px; height: 100%; border: 2px solid rgba(245, 158, 11, 0.1);">
+                            <div class="feature-icon" style="width: 60px; height: 60px; background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin-bottom: 20px; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);">
+                                <i class="bi bi-collection-fill" style="font-size: 28px; color: white;"></i>
+                            </div>
+                            <h5 style="font-weight: 700; font-size: 22px; color: #1e293b; margin-bottom: 12px;">Custom Categories</h5>
+                            <p style="color: #64748b; margin: 0; font-size: 16px; line-height: 1.7;">
+                                Create and manage unlimited custom categories that perfectly fit your unique spending habits and lifestyle.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="margin: 60px 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);">
+
+                <div class="mission-section">
+                    <h3 style="font-weight: 800; font-size: 36px; color: #1e293b; margin-bottom: 25px; text-align: center;">
+                        <i class="bi bi-rocket-takeoff-fill" style="color: #6366f1; margin-right: 10px;"></i>
+                        Our Mission
+                    </h3>
+                    <p style="font-size: 18px; color: #64748b; line-height: 1.9; margin-bottom: 30px; text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">
+                        We believe that everyone deserves financial peace of mind. Our mission is to empower individuals 
+                        to make informed financial decisions through simple, effective budgeting tools that deliver real results.
+                    </p>
+                </div>
+
+                <div class="cta-section" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); 
+                            padding: 50px; border-radius: 24px; text-align: center; margin-top: 50px; position: relative;">
+                    <h4 style="color: white; font-weight: 800; font-size: 32px; margin-bottom: 15px; position: relative; z-index: 1;">Ready to Transform Your Finances?</h4>
+                    <p style="color: rgba(255,255,255,0.95); margin-bottom: 30px; font-size: 18px; position: relative; z-index: 1;">
+                        Join thousands of users who have already taken control of their financial future.
+                    </p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg cta-button" 
+                       style="padding: 16px 50px; border-radius: 16px; font-weight: 700; font-size: 18px; border: none; position: relative; z-index: 1;">
+                        <i class="bi bi-grid-1x2-fill me-2"></i>Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

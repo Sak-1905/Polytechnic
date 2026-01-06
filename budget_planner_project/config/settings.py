@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -75,3 +76,19 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+
+# Email Configuration
+# Note: For Gmail, you need to:
+# 1. Enable 2-factor authentication
+# 2. Generate an App Password at: https://myaccount.google.com/apppasswords
+# 3. Use the App Password (not your regular password) in EMAIL_HOST_PASSWORD
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'Sguheea@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-app-password-here'  # Replace with your Gmail App Password
+DEFAULT_FROM_EMAIL = 'BudgetPro <Sguheea@gmail.com>'
+
+# Contact form recipient
+CONTACT_EMAIL_RECIPIENT = 'Sguheea@gmail.com'

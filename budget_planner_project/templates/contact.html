@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - BudgetPro{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 20px rgba(99, 102, 241, 0);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes glow {
+        0%, 100% {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        50% {
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+        }
+    }
+
+    .page-header {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .contact-card {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        border-radius: 24px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+    }
+
+    .hero-icon {
+        animation: pulse 2s ease-in-out infinite;
+        transition: all 0.3s ease;
+    }
+
+    .hero-icon:hover {
+        animation: bounce 0.6s ease-in-out infinite;
+    }
+
+    .form-control, .form-label {
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        border-color: #6366f1;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 16px;
+    }
+
+    .submit-button {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        padding: 16px 40px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .submit-button:hover::before {
+        width: 400px;
+        height: 400px;
+    }
+
+    .submit-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(99, 102, 241, 0.4);
+    }
+
+    .submit-button:active {
+        transform: translateY(0);
+    }
+
+    .info-card {
+        opacity: 0;
+        animation: fadeInUp 0.6s ease-out both;
+        transition: all 0.3s ease;
+        padding: 25px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(248,250,252,0.9));
+    }
+
+    .info-card:nth-child(1) { animation-delay: 0.8s; }
+    .info-card:nth-child(2) { animation-delay: 0.9s; }
+    .info-card:nth-child(3) { animation-delay: 1s; }
+
+    .info-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    }
+
+    .info-icon-wrapper {
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .info-card:hover .info-icon-wrapper {
+        transform: rotate(360deg) scale(1.1);
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 150px;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+
+    .form-group {
+        animation: slideIn 0.5s ease-out both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.3s; }
+    .form-group:nth-child(2) { animation-delay: 0.4s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.6s; }
+    .form-group:nth-child(5) { animation-delay: 0.7s; }
+</style>
+
+<div class="page-header">
+    <h1 class="page-title">
+        <span class="page-title-icon">
+            <i class="bi bi-envelope-fill"></i>
+        </span>
+        Contact Us
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card contact-card">
+            <div class="card-body" style="padding: 50px 40px;">
+                <div class="text-center mb-5">
+                    <div class="hero-icon" style="width: 100px; height: 100px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%); 
+                                border-radius: 24px; display: flex; align-items: center; 
+                                justify-content: center; margin: 0 auto 25px;">
+                        <i class="bi bi-chat-dots-fill" style="font-size: 48px; color: white;"></i>
+                    </div>
+                    <h3 style="font-weight: 800; font-size: 36px; color: #1e293b; margin-bottom: 12px;">
+                        Get in <span class="gradient-text">Touch</span>
+                    </h3>
+                    <p style="color: #64748b; font-size: 18px; line-height: 1.7; max-width: 500px; margin: 0 auto;">
+                        Have questions or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                    </p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" 
+                             style="border-radius: 12px; border: none; font-weight: 600; animation: shake 0.5s ease-out;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="name" class="form-label">
+                                <i class="bi bi-person-fill me-2" style="color: #6366f1;"></i>Your Name
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   placeholder="John Doe" required>
+                        </div>
+                        
+                        <div class="col-md-6 form-group">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope-fill me-2" style="color: #8b5cf6;"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="subject" class="form-label">
+                            <i class="bi bi-tag-fill me-2" style="color: #ec4899;"></i>Subject
+                        </label>
+                        <input type="text" class="form-control" id="subject" name="subject" 
+                               placeholder="What is this about?" required>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label for="message" class="form-label">
+                            <i class="bi bi-chat-left-text-fill me-2" style="color: #10b981;"></i>Message
+                        </label>
+                        <textarea class="form-control" id="message" name="message" rows="6" 
+                                  placeholder="Tell us more about your inquiry..." required></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 form-group" style="margin-top: 30px;">
+                        <button type="submit" class="btn submit-button">
+                            <i class="bi bi-send-fill me-2"></i>Send Message
+                        </button>
+                    </div>
+                </form>
+
+                <hr style="margin: 50px 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);">
+
+                <div class="row text-center g-4">
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin: 0 auto 18px;">
+                                <i class="bi bi-envelope-fill" style="font-size: 28px; color: #6366f1;"></i>
+                            </div>
+                            <h6 style="font-weight: 700; font-size: 18px; color: #1e293b; margin-bottom: 8px;">Email</h6>
+                            <p style="color: #6366f1; font-size: 15px; font-weight: 600; margin: 0;">Sguheea@gmail.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.15) 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin: 0 auto 18px;">
+                                <i class="bi bi-clock-fill" style="font-size: 28px; color: #10b981;"></i>
+                            </div>
+                            <h6 style="font-weight: 700; font-size: 18px; color: #1e293b; margin-bottom: 8px;">Response Time</h6>
+                            <p style="color: #10b981; font-size: 15px; font-weight: 600; margin: 0;">Within 24-48 hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="info-card">
+                            <div class="info-icon-wrapper" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%); 
+                                        border-radius: 16px; display: flex; align-items: center; 
+                                        justify-content: center; margin: 0 auto 18px;">
+                                <i class="bi bi-headset" style="font-size: 28px; color: #f59e0b;"></i>
+                            </div>
+                            <h6 style="font-weight: 700; font-size: 18px; color: #1e293b; margin-bottom: 8px;">Support</h6>
+                            <p style="color: #f59e0b; font-size: 15px; font-weight: 600; margin: 0;">Mon-Fri, 9AM-5PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
