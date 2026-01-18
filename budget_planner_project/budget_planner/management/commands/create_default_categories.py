@@ -3,29 +3,47 @@ from django.contrib.auth.models import User
 from budget_planner.models import Category
 
 class Command(BaseCommand):
-    help = 'Create default categories for users who don\'t have any'
+    help = 'Create default categories for users'
 
     def handle(self, *args, **options):
         default_categories = [
+            # Income categories
             {'name': 'Salary', 'type': 'income', 'icon': 'bi-cash', 'color': 'success'},
             {'name': 'Freelance', 'type': 'income', 'icon': 'bi-briefcase', 'color': 'info'},
-            {'name': 'Food & Dining', 'type': 'expense', 'icon': 'bi-cup-hot', 'color': 'warning'},
-            {'name': 'Transportation', 'type': 'expense', 'icon': 'bi-car-front', 'color': 'primary'},
+            {'name': 'Gifts', 'type': 'income', 'icon': 'bi-gift', 'color': 'info'},
+            
+            # Expense categories
+            {'name': 'House', 'type': 'expense', 'icon': 'bi-house', 'color': 'primary'},
+            {'name': 'Car', 'type': 'expense', 'icon': 'bi-car-front', 'color': 'primary'},
             {'name': 'Shopping', 'type': 'expense', 'icon': 'bi-cart', 'color': 'danger'},
-            {'name': 'Bills & Utilities', 'type': 'expense', 'icon': 'bi-house', 'color': 'secondary'},
-            {'name': 'Entertainment', 'type': 'expense', 'icon': 'bi-controller', 'color': 'info'},
-            {'name': 'Healthcare', 'type': 'expense', 'icon': 'bi-heart-pulse', 'color': 'danger'},
+            {'name': 'Food & Drink', 'type': 'expense', 'icon': 'bi-cup-hot', 'color': 'warning'},
+            {'name': 'Health', 'type': 'expense', 'icon': 'bi-heart-pulse', 'color': 'danger'},
+            {'name': 'Education', 'type': 'expense', 'icon': 'bi-mortarboard', 'color': 'info'},
+            {'name': 'Entertainment', 'type': 'expense', 'icon': 'bi-controller', 'color': 'secondary'},
+            {'name': 'Work', 'type': 'expense', 'icon': 'bi-briefcase', 'color': 'dark'},
+            {'name': 'Savings', 'type': 'expense', 'icon': 'bi-piggy-bank', 'color': 'success'},
+            {'name': 'Other', 'type': 'expense', 'icon': 'bi-three-dots', 'color': 'secondary'},
         ]
 
         users = User.objects.all()
+        created_count = 0
+        
         for user in users:
-            existing_count = Category.objects.filter(user=user).count()
-            if existing_count == 0:
-                self.stdout.write(f'Creating default categories for user: {user.username}')
-                for cat in default_categories:
-                    Category.objects.create(user=user, **cat)
-                self.stdout.write(self.style.SUCCESS(f'Created {len(default_categories)} categories for {user.username}'))
-            else:
-                self.stdout.write(f'User {user.username} already has {existing_count} categories')
-
-        self.stdout.write(self.style.SUCCESS('Default categories creation completed'))
+            self.stdout.write(f'Processing user: {user.username}')
+            for cat in default_categories:
+                category, created = Category.objects.get_or_create(
+                    user=user,
+                    name=cat['name'],
+                    defaults={
+                        'type': cat['type'],
+                        'icon': cat['icon'],
+                        'color': cat['color']
+                    }
+                )
+                if created:
+                    created_count += 1
+                    self.stdout.write(f'  Created: {cat["name"]}')
+                else:
+                    self.stdout.write(f'  Already exists: {cat["name"]}')
+        
+        self.stdout.write(self.style.SUCCESS(f'Successfully created {created_count} new categories'))

@@ -18,6 +18,7 @@ class RegisterForm(UserCreationForm):
 
 class CategoryForm(forms.ModelForm):
     ICON_CHOICES = [
+        ('', '-- Select Icon --'),
         ('bi-house', 'House'),
         ('bi-car-front', 'Car'),
         ('bi-cart', 'Shopping'),

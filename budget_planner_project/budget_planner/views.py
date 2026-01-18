@@ -10,6 +10,9 @@ from .forms import RegisterForm, CategoryForm, TransactionForm, BudgetGoalForm
 import json
 from django.core.mail import send_mail
 from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def register(request):
@@ -194,8 +197,8 @@ def add_category(request):
             return redirect('categories')
     else:
         form = CategoryForm()
-    
-    return render(request, 'category_form.html', {'form': form, 'title': 'Add Category'})
+
+    return render(request, 'categories_form.html', {'form': form, 'title': 'Add Category'})
 
 
 @login_required
@@ -209,8 +212,8 @@ def edit_category(request, pk):
             return redirect('categories')
     else:
         form = CategoryForm(instance=category)
-    
-    return render(request, 'category_form.html', {'form': form, 'title': 'Edit Category'})
+
+    return render(request, 'categories_form.html', {'form': form, 'title': 'Edit Category'})
 
 
 @login_required
@@ -378,18 +381,25 @@ def contact(request):
         """
         
         try:
+            # Check if email is properly configured
+            if settings.EMAIL_HOST_PASSWORD == 'your-app-password-here':
+                logger.error('Email not configured: EMAIL_HOST_PASSWORD is still set to placeholder')
+                messages.error(request, 'Email service is not properly configured. Please contact the administrator.')
+                return render(request, 'contact.html')
+            
             # Send email
             send_mail(
                 subject=f'Contact Form: {subject}',
                 message=full_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=['Sguheea@gmail.com'],
+                recipient_list=[settings.CONTACT_EMAIL_RECIPIENT],
                 fail_silently=False,
             )
             messages.success(request, 'Your message has been sent successfully! We will get back to you soon.')
             return redirect('contact')
         except Exception as e:
-            messages.error(request, 'Sorry, there was an error sending your message. Please try again later.')
+            logger.error(f'Error sending contact email: {str(e)}')
+            messages.error(request, f'Sorry, there was an error sending your message: {str(e)}')
             return render(request, 'contact.html')
     
     return render(request, 'contact.html')

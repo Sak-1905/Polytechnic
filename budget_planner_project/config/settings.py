@@ -1,11 +1,20 @@
 from pathlib import Path
 import os
 
+try:
+    from environ import Env
+except ImportError:
+    raise ImportError("Please install django-environ: pip install django-environ")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-change-this-in-production-abc123xyz789'
+# Initialize environ
+env = Env()
+env.read_env(str(BASE_DIR / '.env'))
 
-DEBUG = True
+SECRET_KEY = env('SECRET_KEY')
+
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = []
 
@@ -81,14 +90,36 @@ LOGIN_URL = 'login'
 # Note: For Gmail, you need to:
 # 1. Enable 2-factor authentication
 # 2. Generate an App Password at: https://myaccount.google.com/apppasswords
-# 3. Use the App Password (not your regular password) in EMAIL_HOST_PASSWORD
+# 3. Add the App Password to .env file as EMAIL_HOST_PASSWORD
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'Sguheea@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-app-password-here'  # Replace with your Gmail App Password
-DEFAULT_FROM_EMAIL = 'BudgetPro <Sguheea@gmail.com>'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env.int('EMAIL_PORT')
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS')
+EMAIL_USE_SSL = env.bool('EMAIL_USE_SSL')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 # Contact form recipient
-CONTACT_EMAIL_RECIPIENT = 'Sguheea@gmail.com'
+CONTACT_EMAIL_RECIPIENT = env('CONTACT_EMAIL_RECIPIENT')
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+    },
+    'loggers': {
+        'budget_planner': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+    },
+}
